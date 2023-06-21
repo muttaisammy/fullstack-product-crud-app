@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { deleteProduct } from "../features/apiCalls";
-const BASE_API_URL = "http://localhost:8081";
+const BASE_API_URL = "http://localhost:3000";
 
 const Product = ({
   productId,
@@ -59,3 +59,5 @@ const Product = ({
 };
 
 export default Product;
+
+

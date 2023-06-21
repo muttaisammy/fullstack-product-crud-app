@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -15,6 +16,7 @@ const AddProduct = () => {
     productDescription: "",
     productPrice: "",
     availableQuantity: "",
+    productId: Math.floor(Math.random())
   });
   const [selectedImage, setSelectedImage] = useState();
   const [previewUrl, setPreviewUrl] = useState();
@@ -48,8 +50,8 @@ const AddProduct = () => {
     productThumbnail,
     productId,
   } = defaultValue;
-  console.log(productId);
-  const handleSubmit = async (e) => {
+
+  const handle3000 = async (e) => {
     e.preventDefault();
     console.log(e.target);
     let formData = new FormData(e.target);
@@ -98,7 +100,7 @@ const AddProduct = () => {
         </h2>
       </div>
       <div className="flex flex-col">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handle3000}>
           <div className="mb-4">
             <label>Product Title</label>
             <input
@@ -134,7 +136,7 @@ const AddProduct = () => {
             />
           </div>
           <div className="mb-10">
-            <label>Product Thumnail</label>
+            <label>Product Thumbnail</label>
             <input
               onChange={(e) => {
                 setSelectedImage(e.target.files[0]);
@@ -156,7 +158,7 @@ const AddProduct = () => {
             )}
           </div>
           <div className="flex items-center mb-5">
-            <button className="w-full">Submit</button>
+            <button className="w-full">submit</button>
           </div>
         </form>
       </div>

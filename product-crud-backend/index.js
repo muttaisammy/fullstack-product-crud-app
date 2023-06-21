@@ -1,20 +1,19 @@
-const express = require("express");
 const mysql = require("mysql");
 const path = require("path");
 const cors = require("cors");
 const multer = require("multer");
+const express = require("express");
 const fs = require("fs");
 require('dotenv').config()
-console.log(process.env)
-console.log(process.env.DB_PASSWORD)
 const db = mysql.createConnection({
   host: "localhost",
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: "products",
+  user: "root",
+  password: "pass",
+  database: "PRODUCTS",
 });
 
 const storage = multer.diskStorage({
+
   destination: (req, file, cb) => {
     cb(null, "uploads");
   },
@@ -44,20 +43,23 @@ app.post("/thumbnailUpload", upload.single("productThumbnail"), (req, res) => {
 app.get("/products", (req, res) => {
     const q = "select * from product";
     db.query(q, (err, data) => {
-      console.log(err, data);
-      if (err) return res.json({ error: err.sqlMessage });
-      else return res.json({ data });
+      if (err) {
+        res.send(err)
+      }else {
+        res.json({ data });
+      }
+
     });
   });
   app.post("/products", (req, res) => {
-    const q = `insert into product(productId, productTitle, productDescription, productPrice, availableQuantity, productThumbnail)
+    const q = `insert into product(productID, productTitle, productDescription, productPrice, availableQuantity, productThumbnail)
       values(?)`;
     const values = [...Object.values(req.body)];
-    console.log("insert", values);
     db.query(q, [values], (err, data) => {
-      console.log(err, data);
       if (err) return res.json({ error: err.sqlMessage });
-      else return res.json({ data });
+      if(data.affectedRows == 1) {
+        res.send('Data inserted successfully')
+      }
     });
   });
   
@@ -65,15 +67,20 @@ app.get("/products", (req, res) => {
     const id = req.params.productId;
     const q = "SELECT * FROM product where productId=?";
     db.query(q, [id], (err, data) => {
-      console.log(err, data);
-      if (err) return res.json({ error: err.sqlMessage });
-      else return res.json({ data });
+      if(err) {
+        console.log(err)
+      }else {
+        if(data.length > 0) {
+          res.json(data)
+        }
+        res.json({message: 'No data found!'})
+      
+      }
     });
   });
   
   app.put("/products/:productId", (req, res) => {
     const id = req.params.productId;
-    console.log("updated " + req.body);
     const data = req.body;
     if (data.productPrice) data.productPrice = Number.parseInt(data.productPrice);
     if (data.availableQuantity)
@@ -86,7 +93,6 @@ app.get("/products", (req, res) => {
       " where productId='" +
       id +
       "'";
-    console.log(q);
     db.query(q, [...Object.values(data)], (err, out) => {
       console.log(err, out);
       if (err) return res.json({ error: err.message });
@@ -109,7 +115,11 @@ app.get("/products", (req, res) => {
     })
 });
 
+app.listen(3000, () => {
+  console.log(`server runnning PORT 3000`)
+  db.connect((err) => {
+    if(err) throw err;
 
-app.listen(8081, () => {
-  console.log("listening");
-});
+    console.log('Database connected')
+  })
+})
